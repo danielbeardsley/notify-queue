@@ -1,0 +1,23 @@
+{
+  "name": "async-queue",
+  "version": "0.0.0",
+  "description": "A simple queue with asynchronous pop()",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielbeardsley/async-queue.git"
+  },
+  "keywords": [
+    "async",
+    "queue",
+    "pop"
+  ],
+   "devDependencies" : {
+      "mocha" : "~1.6.0"
+   },
+  "author": "Daniel Beardsley <daniel.beardsley@gmail.com>",
+  "license": "MIT"
+}
