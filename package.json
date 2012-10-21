@@ -1,17 +1,19 @@
 {
-  "name": "async-queue",
-  "version": "0.0.0",
+  "name": "notify-queue",
+  "version": "0.0.1",
   "description": "A simple queue with asynchronous pop()",
   "main": "index.js",
+  "url": "https://github.com/danielbeardsley/notify-queue",
   "scripts": {
     "test": "mocha test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/danielbeardsley/async-queue.git"
+    "url": "https://github.com/danielbeardsley/notify-queue.git"
   },
   "keywords": [
     "async",
+    "notify",
     "queue",
     "pop"
   ],

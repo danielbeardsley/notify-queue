@@ -1,7 +1,7 @@
-async-queue
-===========
+notify-queue
+============
 
-A Queue with Asynchronous `pop()`.
+A Queue with a callback driven `pop()`.
 `push()` and `pop()` are relatively normal,
 but `pop()` instead takes a callback and is called whenever an item is pushed.
 
@@ -11,8 +11,8 @@ Example Usage
 =============
 
 ```js
-var AsyncQueue = require('async-queue');
-var q = new AsyncQueue();
+var NotifyQueue = require('notify-queue');
+var q = new NotifyQueue();
 
 q.pop(function(item, done) {
    someasyncfunction(item, function() {
