@@ -23,13 +23,39 @@ q.pop(function(item, done) {
 q.push("an item");
 ```
 
+Or, with matchers:
+
+```js
+var NotifyQueue = require('notify-queue');
+var q = new NotifyQueue();
+
+function processor(item, done) {
+   someAsyncFunction(item, function(results) {
+      // do something with results
+      done();
+   });
+});
+
+function matcher(item) {
+  return item.isforMe = true;
+}
+
+q.pop(processor, matcher)
+
+q.push("an item");
+```
+
 Interface
 =========
 ### `queue.push(item)` ###
 Adds an item to the queue triggering any waiting `pop()` callbacks.
 
-### `queue.pop(callback)` ###
+### `queue.pop(callback[, matcher])` ###
 Registers `callback` so it's called whenever an item is added to the queue.
+If a `matcher` function is provided,
+`callback` will only be called when `matcher(item)` returns something truthy.
+Otherwise, `callback` will be called for any item.
+
 `callback` is passed the item and a `done()` function.
 `callback` will not be called again until after `done()` is called.
 If `pop()` is called more than once,

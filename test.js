@@ -41,6 +41,32 @@ describe("Queue", function() {
          });
       });
 
+      it("should allow a filtering function", function (done) {
+         var queue = new Queue();
+         var count = 4;
+
+         queue.push('a');
+         queue.push('a');
+         queue.push('b');
+         queue.push('b');
+         queue.pop(asserter(/a/), matcher(/a/));
+         queue.pop(asserter(/b/), matcher(/b/));
+
+         function matcher(regex) {
+            return function(job) {
+               return regex.test(job);
+            }
+         }
+
+         function asserter(regex) {
+            return function(job, next) {
+               assert.ok(regex.test(job));
+               next();
+               if (--count <= 0) done();
+            }
+         }
+      });
+
       it("should work when pop is called first", function (done) {
          var job = {a: 1, b: 2},
             cb = 0,

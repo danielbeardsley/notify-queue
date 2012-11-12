@@ -9,18 +9,32 @@ Queue.prototype._notify = function() {
   var self = this
     , clients = this.waiting
     , queue = this.queue
-    , client
-    , item;
+    , client = null
+    , item = null;
   
-  if (clients.length && queue.length) {
-      client = clients.shift();
-      item = queue.shift();
-     process.nextTick(function() {
-          client(item, function() {
-             clients.push(client);
-             self._notify()
-          });
-     });
+  if (!clients.length || !queue.length) {
+    return;
+  }
+
+  for (var i=0, len=queue.length; i < len; i++) {
+    client = self._findClientFor(queue[i]);
+    /**
+     * If we find a client that can handle this item, 
+     * then THIS is the item we'll be processing.
+     */
+    if (client) {
+      item = queue.splice(i, 1)[0];
+      break;
+    }
+  }
+
+  if (item !== null) {
+    process.nextTick(function() {
+      client.callback(item, function() {
+         clients.push(client);
+         self._notify()
+      });
+    });
   }
 }
 
@@ -29,12 +43,36 @@ Queue.prototype.push = function push(item) {
   this._notify();
 }
 
-Queue.prototype.pop = function pop(callback) {
-  this.waiting.push(callback);
+Queue.prototype.pop = function pop(callback, matcher) {
+  this.waiting.push({
+    callback: callback,
+    matcher:  matcher
+  });
   this._notify();
 }
 
+/**
+ * Search for a client that can accept the item.
+ * if a client didn't specify a matcher, then they
+ * accept any item.
+ */
+Queue.prototype._findClientFor = function _findClientFor(item) {
+  var clients = this.waiting;
+  var clientIndex = null;
+  for (var i=0, len=clients.length; i<len; i++) {
+    var matcher = clients[i].matcher;
+    if (!matcher || matcher(item)) {
+      clientIndex = i;
+      break;
+    }
+  }
+
+  if (clientIndex !== null) {
+    return clients.splice(clientIndex, 1)[0];
+  }
+}
+
 Queue.prototype.items = function() {
-   return this.queue;
+  return this.queue;
 }
 
