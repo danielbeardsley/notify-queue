@@ -4,7 +4,7 @@ notify-queue
 
 A Queue with a callback driven `pop()`.
 `push()` and `pop()` are relatively normal,
-but `pop()` instead takes a callback and is called whenever an item is pushed.
+but `pop()` instead takes a callback and is called whenever there is an item available.
 
 It's ideal for creating a work-queue where each worker needs to process one item at a time and should be notified when new items are added.
 
@@ -38,7 +38,7 @@ function processor(item, done) {
 });
 
 function matcher(item) {
-  return item.isforMe = true;
+  return item.isforMe == true;
 }
 
 q.pop(processor, matcher)
