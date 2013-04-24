@@ -1,5 +1,6 @@
 notify-queue
 ============
+[![Build Status](https://travis-ci.org/danielbeardsley/notify-queue.png?branch=master)](https://travis-ci.org/danielbeardsley/notify-queue)
 
 A Queue with a callback driven `pop()`.
 `push()` and `pop()` are relatively normal,
