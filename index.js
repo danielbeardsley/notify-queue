@@ -44,11 +44,16 @@ Queue.prototype.push = function push(item) {
 }
 
 Queue.prototype.pop = function pop(callback, matcher) {
-  this.waiting.push({
+  var waiting = this.waiting;
+  var popper = {
     callback: callback,
     matcher:  matcher
-  });
+  };
+  waiting.push(popper);
   this._notify();
+  return function cancel() {
+    waiting.splice(waiting.indexOf(popper),1);
+  }
 }
 
 /**

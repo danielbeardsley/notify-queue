@@ -95,6 +95,23 @@ describe("Queue", function() {
          });
       });
    });
+
+   describe(".pop()", function() {
+      it("should provide a function to cancel the popping()", function (done) {
+         var queue = new Queue();
+
+         var cancel = queue.pop(function(job) {
+            assert.fail();
+            later(function() { done(); });
+         });
+         cancel();
+         queue.push({});
+         later(function() {
+           done();
+         });
+      });
+   });
+
    describe(".items()", function() {
       it("should return an array of the currently queued items", function(testDone) {
          var queue = new Queue();

@@ -11,17 +11,45 @@ It's ideal for creating a work-queue where each worker needs to process one item
 Example Usage
 =============
 
+Simplest usage:
 ```js
 var NotifyQueue = require('notify-queue');
 var q = new NotifyQueue();
 
-q.pop(function(item, done) {
+q.pop(function(item) {
+   // do some stuff with item.
+});
+
+q.push("an item");
+```
+
+Simplest usage:
+```js
+var NotifyQueue = require('notify-queue');
+var q = new NotifyQueue();
+
+var cancel = q.pop(function(item) {
+   // do some stuff with item.
+});
+
+cancel();
+
+q.push("an item"); // the callback above won't be called
+```
+
+One `pop()` call can be called multiple times if next() is used:
+```js
+var NotifyQueue = require('notify-queue');
+var q = new NotifyQueue();
+
+q.pop(function(item, next) {
    someasyncfunction(item, function() {
-      done();
+      next();
    });
 });
 
 q.push("an item");
+q.push("another item");
 ```
 
 Or, with matchers:
@@ -30,20 +58,18 @@ Or, with matchers:
 var NotifyQueue = require('notify-queue');
 var q = new NotifyQueue();
 
-function processor(item, done) {
-   someAsyncFunction(item, function(results) {
-      // do something with results
-      done();
-   });
+function processor(item) {
+   // only called when item.isForMe == true
 });
 
 function matcher(item) {
-  return item.isforMe == true;
+  return item.isForMe == true;
 }
 
 q.pop(processor, matcher)
 
 q.push("an item");
+q.push({isForMe: true, msg: "an item"});
 ```
 
 Interface
@@ -55,13 +81,16 @@ Adds an item to the queue triggering any waiting `pop()` callbacks.
 Registers `callback` so it's called whenever an item is added to the queue.
 If a `matcher` function is provided,
 `callback` will only be called when `matcher(item)` returns something truthy.
-Otherwise, `callback` will be called for any item.
+Otherwise, `callback` will be called for the first item.
 
-`callback` is passed the item and a `done()` function.
-`callback` will not be called again until after `done()` is called.
+`callback` is passed the item and a `next()` function.
+`callback` will not be called again unless `next()` is called.
 If `pop()` is called more than once,
 available callbacks will be served items in a round-robin fashion.
-An available callback is one that is not waiting for `done()` to be called.
+An available callback is one that is not waiting for `next()` to be called.
+
+`pop()` returns a function that when called, removes the `callback` from the
+list of waiting callbacks and ensures it will not be called again.
 
 ### `queue.items()` ###
 Returns the array of items currently in the queue.
