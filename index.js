@@ -29,10 +29,10 @@ Queue.prototype._notify = function() {
   }
 
   if (item !== null) {
-    process.nextTick(function() {
-      client.callback(item, function() {
-         clients.push(client);
-         self._notify()
+    client.callback(item, function() {
+      process.nextTick(function() {
+        clients.push(client);
+        self._notify();
       });
     });
   }
